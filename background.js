@@ -129,9 +129,6 @@ browser.commands.onCommand.addListener((command) => {
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "saveTabs") {
     saveTabs();
-  } else if (request.action === "getMetadata") {
-    // Request from content script for metadata
-    getPageMetadata(sender.tab);
   }
 });
 
@@ -183,10 +180,21 @@ async function saveTabs() {
         const code = `
           navigator.clipboard.writeText(${JSON.stringify(markdown)}).then(() => {
             alert('Tab list copied to clipboard!');
+          }).catch(() => {
+            // Fallback: copy to clipboard using older method
+            const textarea = document.createElement('textarea');
+            textarea.value = ${JSON.stringify(markdown)};
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('Tab list copied to clipboard!');
           });
         `;
         
-        browser.tabs.executeScript({
+        // Get active tab and inject script
+        const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+        browser.tabs.executeScript(activeTab.id, {
           code: code
         });
         break;
