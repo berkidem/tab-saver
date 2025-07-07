@@ -9,8 +9,7 @@
     "downloads",
     "activeTab",
     "notifications",
-    "storage",
-    "<all_urls>"
+    "storage"
   ],
   
   "background": {
@@ -22,19 +21,13 @@
     "default_title": "Save all tabs to markdown",
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "icon-16.png",
-      "48": "icon-48.png",
-      "128": "icon-128.png"
+      "16": "icon.svg",
+      "48": "icon.svg",
+      "128": "icon.svg"
     }
   },
   
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "run_at": "document_idle"
-    }
-  ],
+
   
   "commands": {
     "save-tabs": {
