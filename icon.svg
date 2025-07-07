@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" fill="#4A90E2"/>
+  <g fill="white">
+    <!-- Tab shape -->
+    <rect x="20" y="30" width="88" height="68" rx="4" stroke="white" stroke-width="3" fill="none"/>
+    <rect x="20" y="30" width="30" height="20" rx="4" fill="white"/>
+    
+    <!-- Arrow pointing down (save) -->
+    <path d="M64 55 L64 75 L54 75 L64 85 L74 75 L64 75" fill="white"/>
+    <rect x="54" y="85" width="20" height="3" fill="white"/>
+  </g>
+</svg>
