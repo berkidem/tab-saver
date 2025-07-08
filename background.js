@@ -59,17 +59,23 @@ const enhancedTabTracking = {
   
   // Track URL changes within same tab
   async onTabUpdated(tabId, changeInfo, tab) {
-    if (changeInfo.url) {
+    if (changeInfo.url && changeInfo.url.trim()) {
       const history = await browser.storage.local.get('tabHistory');
       const tabHistory = history.tabHistory || {};
       const tabData = tabHistory[tabId] || {};
       
-      if (tabData.url && tabData.url !== changeInfo.url) {
+      // Only store previous URL if it's valid and different from new URL
+      if (tabData.url && tabData.url.trim() && tabData.url !== changeInfo.url) {
         tabData.previousUrls = tabData.previousUrls || [];
         tabData.previousUrls.push({
           url: tabData.url,
           timestamp: new Date().toISOString()
         });
+        
+        // Keep only last 10 URLs to prevent excessive storage
+        if (tabData.previousUrls.length > 10) {
+          tabData.previousUrls = tabData.previousUrls.slice(-10);
+        }
       }
       
       tabData.url = changeInfo.url;
@@ -273,11 +279,14 @@ async function generateMarkdown(tabs) {
     }
     
     if (tabData.previousUrls && tabData.previousUrls.length > 0) {
-      lines.push(`${indent}   - URL history: ${tabData.previousUrls.length} previous URLs`);
-      tabData.previousUrls.slice(-3).forEach(prev => {
-        const prevTime = new Date(prev.timestamp);
-        lines.push(`${indent}     • ${prev.url} (${prevTime.toLocaleTimeString()})`);
-      });
+      const recentUrls = tabData.previousUrls.slice(-3).filter(prev => prev.url && prev.url.trim());
+      if (recentUrls.length > 0) {
+        lines.push(`${indent}   - Last ${recentUrls.length} previous URLs:`);
+        recentUrls.forEach(prev => {
+          const prevTime = new Date(prev.timestamp);
+          lines.push(`${indent}       • ${prev.url} (${prevTime.toLocaleTimeString()})`);
+        });
+      }
     }
     
     // Add container info if using containers

@@ -31,13 +31,21 @@ if (draft && !markdown) {
 }
 
 // Simple scroll sync between editor and preview
+let isScrolling = false; // Flag to prevent infinite scroll loops
+
 function syncScroll() {
+  if (isScrolling) return;
+  isScrolling = true;
+  
   const editor = document.getElementById('editor');
   const previewContainer = document.getElementById('previewContainer');
   
   // Calculate scroll percentage of editor
   const editorMaxScroll = editor.scrollHeight - editor.clientHeight;
-  if (editorMaxScroll <= 0) return; // No scrolling needed
+  if (editorMaxScroll <= 0) {
+    isScrolling = false;
+    return; // No scrolling needed
+  }
   
   const scrollPercentage = editor.scrollTop / editorMaxScroll;
   
@@ -46,10 +54,38 @@ function syncScroll() {
   if (maxScroll > 0) {
     previewContainer.scrollTop = scrollPercentage * maxScroll;
   }
+  
+  setTimeout(() => { isScrolling = false; }, 10);
 }
 
-// Add scroll sync listener
+function syncScrollReverse() {
+  if (isScrolling) return;
+  isScrolling = true;
+  
+  const editor = document.getElementById('editor');
+  const previewContainer = document.getElementById('previewContainer');
+  
+  // Calculate scroll percentage of preview
+  const previewMaxScroll = previewContainer.scrollHeight - previewContainer.clientHeight;
+  if (previewMaxScroll <= 0) {
+    isScrolling = false;
+    return; // No scrolling needed
+  }
+  
+  const scrollPercentage = previewContainer.scrollTop / previewMaxScroll;
+  
+  // Apply same percentage to editor
+  const editorMaxScroll = editor.scrollHeight - editor.clientHeight;
+  if (editorMaxScroll > 0) {
+    editor.scrollTop = scrollPercentage * editorMaxScroll;
+  }
+  
+  setTimeout(() => { isScrolling = false; }, 10);
+}
+
+// Add scroll sync listeners for both directions
 document.getElementById('editor').addEventListener('scroll', syncScroll);
+document.getElementById('previewContainer').addEventListener('scroll', syncScrollReverse);
 
 // Helper function to process markdown formatting (links and bold text)
 function processMarkdownText(text, container) {
@@ -83,60 +119,136 @@ function updatePreview() {
   const lines = content.split('\n');
   let currentList = null;
   let listType = null;
+  let currentIndentLevel = 0;
   
   lines.forEach(line => {
-    line = line.trim();
-    if (!line) {
+    const originalLine = line;
+    const trimmedLine = line.trim();
+    
+    if (!trimmedLine) {
       if (currentList) {
         preview.appendChild(currentList);
         currentList = null;
+        listType = null;
+        currentIndentLevel = 0;
       }
       preview.appendChild(document.createElement('br'));
       return;
     }
     
+    // Calculate indentation level
+    const indentMatch = line.match(/^(\s*)/);
+    const indentLevel = indentMatch ? Math.floor(indentMatch[1].length / 2) : 0;
+    
     // Headers
-    if (line.startsWith('### ')) {
+    if (trimmedLine.startsWith('### ')) {
+      if (currentList) {
+        preview.appendChild(currentList);
+        currentList = null;
+        listType = null;
+        currentIndentLevel = 0;
+      }
       const h3 = document.createElement('h3');
-      processMarkdownText(line.substring(4), h3);
+      processMarkdownText(trimmedLine.substring(4), h3);
       preview.appendChild(h3);
-    } else if (line.startsWith('## ')) {
+    } else if (trimmedLine.startsWith('## ')) {
+      if (currentList) {
+        preview.appendChild(currentList);
+        currentList = null;
+        listType = null;
+        currentIndentLevel = 0;
+      }
       const h2 = document.createElement('h2');
-      processMarkdownText(line.substring(3), h2);
+      processMarkdownText(trimmedLine.substring(3), h2);
       preview.appendChild(h2);
-    } else if (line.startsWith('# ')) {
+    } else if (trimmedLine.startsWith('# ')) {
+      if (currentList) {
+        preview.appendChild(currentList);
+        currentList = null;
+        listType = null;
+        currentIndentLevel = 0;
+      }
       const h1 = document.createElement('h1');
-      processMarkdownText(line.substring(2), h1);
+      processMarkdownText(trimmedLine.substring(2), h1);
       preview.appendChild(h1);
     }
-    // Lists
-    else if (line.match(/^\d+\. /)) {
-      if (!currentList || listType !== 'ol') {
+    // Numbered lists - preserve original numbers
+    else if (trimmedLine.match(/^\d+\. /)) {
+      // If different indent level or not an ordered list, create new list
+      if (!currentList || listType !== 'ol' || indentLevel !== currentIndentLevel) {
         if (currentList) preview.appendChild(currentList);
         currentList = document.createElement('ol');
         listType = 'ol';
+        currentIndentLevel = indentLevel;
+        
+        // Extract the number to set the start attribute
+        const numberMatch = trimmedLine.match(/^(\d+)\. /);
+        if (numberMatch && parseInt(numberMatch[1]) > 1) {
+          currentList.setAttribute('start', numberMatch[1]);
+        }
       }
+      
       const li = document.createElement('li');
-      processMarkdownText(line.replace(/^\d+\. /, ''), li);
+      processMarkdownText(trimmedLine.replace(/^\d+\. /, ''), li);
       currentList.appendChild(li);
-    } else if (line.startsWith('- ')) {
-      if (!currentList || listType !== 'ul') {
+    } 
+    // Bullet points and nested items
+    else if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('• ')) {
+      // If different indent level or not an unordered list, create new list
+      if (!currentList || listType !== 'ul' || indentLevel !== currentIndentLevel) {
         if (currentList) preview.appendChild(currentList);
         currentList = document.createElement('ul');
         listType = 'ul';
+        currentIndentLevel = indentLevel;
       }
+      
       const li = document.createElement('li');
-      processMarkdownText(line.substring(2), li);
+      const text = trimmedLine.startsWith('- ') ? trimmedLine.substring(2) : trimmedLine.substring(2);
+      processMarkdownText(text, li);
       currentList.appendChild(li);
+    }
+            // Handle nested indented content (like sub-items under numbered lists)
+        else if (indentLevel > 0 && currentList) {
+          // This is likely a nested item under a list item
+          const li = document.createElement('li');
+          li.style.listStyle = 'none';
+          li.style.marginLeft = `${(indentLevel - currentIndentLevel) * 20}px`;
+          
+          // Handle different bullet styles with proper indentation
+          if (trimmedLine.startsWith('↳ ')) {
+            li.style.paddingLeft = '0';
+            processMarkdownText(trimmedLine, li);
+          } else if (trimmedLine.startsWith('• ')) {
+            // Previous URLs with bullet points - make them look like sub-items
+            li.style.color = '#93a1a1'; // Slightly muted color for sub-items
+            li.style.fontSize = '13px';
+            processMarkdownText(trimmedLine, li);
+          } else {
+            processMarkdownText(trimmedLine, li);
+          }
+          
+          currentList.appendChild(li);
+        }
+    // Horizontal rules
+    else if (trimmedLine === '---') {
+      if (currentList) {
+        preview.appendChild(currentList);
+        currentList = null;
+        listType = null;
+        currentIndentLevel = 0;
+      }
+      preview.appendChild(document.createElement('hr'));
     }
     // Regular text with formatting
     else {
       if (currentList) {
         preview.appendChild(currentList);
         currentList = null;
+        listType = null;
+        currentIndentLevel = 0;
       }
       const p = document.createElement('p');
-      processMarkdownText(line, p);
+      processMarkdownText(trimmedLine, p);
       preview.appendChild(p);
     }
   });
