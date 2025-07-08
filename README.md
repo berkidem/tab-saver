@@ -4,9 +4,9 @@ A Firefox browser extension that saves all your open tabs to a markdown file wit
 
 ### Why Did I Need This?
 
-I have a tab problem; I regularly use dozens of browser windows with hundreds of tabs. To make the matters worse, many of my browsing start in private windows, since at that point, I don't know how deep I will dive. Often enough, these deep dives graduate to being rabbitholes where I can claim residence for tax purposes. However, I am afraid to close them at that point because these sites are not in my browsing history, due to private browsing. Of course, there are ways to save all the tabs in a bookmark folder and such but (i) bookmarks are not easy to work with, (ii) without notes and annotations, lists become useless hoards. (See [here](https://en.wikipedia.org/wiki/The_Infinity_of_Lists) for some lists, and [here](https://en.wikipedia.org/wiki/La_Ricerca_della_Lingua_Perfetta_nella_Cultura_Europea) for more context on their uselessness.)
+I have a tab problem; I regularly use dozens of browser windows with hundreds of tabs. To make the matters worse, many of my browsing start in private windows; at that point, I don't know how deep I will dive yet. Often enough, these deep dives graduate to being rabbitholes where I can claim residence for tax purposes. However, I am afraid to close them at that point because these sites are not in my browsing history, due to private browsing. Of course, there are ways to save all the tabs in a bookmark folder and such but (i) bookmarks are not easy to work with, (ii) without notes and annotations, lists become useless hoards. (See [here](https://en.wikipedia.org/wiki/The_Infinity_of_Lists) for some lists, and [here](https://en.wikipedia.org/wiki/La_Ricerca_della_Lingua_Perfetta_nella_Cultura_Europea) for more context on their uselessness.)
 
-So, I wanted to be able to save the tabs in such a way that I would have the option to immediately add some notes about them; I knew that once it was saved without some annotation, it would be much less useful and unlikely to be annotated later on (without much work). So, I vibe coded this.
+So, I wanted to be able to save the tabs in such a way that I would have the option to immediately add some notes about them; I knew that once it was saved without some annotation, it would be much less useful and unlikely to be annotated later on (without much work). I tried to find an existing tool but in the end, I vibe coded this.
 
 ## Features
 
@@ -60,7 +60,7 @@ Since this extension is currently for personal use and not yet published to the 
 5. Choose your `.xpi` file
 6. Click "Add" when prompted
 
-NB: For step 4/5/6 to work as expected, you might need to go to `about:config`, search for `xpinstall` and set `xpinstall.signatures.required` to `false`. If this doesn't work, you might also need to switch to the Developer Edition of Firefox. This problem will be solved when I submit this add-on to Firefox's marketplace but I want to test it more extensively before that.
+NB: For step 4/5/6 to work as expected, you might need to go to `about:config`, search for `xpinstall` and set `xpinstall.signatures.required` to `false`. If this doesn't work, you might also need to switch to the Developer Edition of Firefox. This problem will be solved when I submit this add-on to Firefox's marketplace but I want to test it more extensively before that. I tested it on Firefox version 128.12.0esr.
 
 ### Step 4: Grant Permissions
 The extension will request permissions to:
