@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Tab Saver to Markdown",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Save all open tabs to a markdown file with metadata",
 
  "browser_specific_settings": {
@@ -44,7 +44,8 @@
   
   "web_accessible_resources": [
     "editor.html",
-    "editor.js"
+    "editor.js",
+    "options.js"
   ],
   
   "options_ui": {

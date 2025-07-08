@@ -30,30 +30,98 @@ if (draft && !markdown) {
   document.getElementById('editor').value = draft;
 }
 
-// Preview functionality
+// Preview functionality using DOM manipulation (no innerHTML)
 function updatePreview() {
   const content = document.getElementById('editor').value;
   const preview = document.getElementById('preview');
   
-  // Simple markdown to HTML conversion
-  let html = content
-    // Headers
-    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-    // Links
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
-    // Bold
-    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-    // Lists
-    .replace(/^\d+\. (.*)$/gm, '<li>$1</li>')
-    .replace(/^- (.*)$/gm, '<li>$1</li>')
-    // Line breaks
-    .replace(/\n/g, '<br>')
-    // Wrap lists
-    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+  // Clear previous content
+  preview.textContent = '';
+  
+  const lines = content.split('\n');
+  let currentList = null;
+  let listType = null;
+  
+  lines.forEach(line => {
+    line = line.trim();
+    if (!line) {
+      if (currentList) {
+        preview.appendChild(currentList);
+        currentList = null;
+      }
+      preview.appendChild(document.createElement('br'));
+      return;
+    }
     
-  preview.innerHTML = html;
+    // Headers
+    if (line.startsWith('### ')) {
+      const h3 = document.createElement('h3');
+      h3.textContent = line.substring(4);
+      preview.appendChild(h3);
+    } else if (line.startsWith('## ')) {
+      const h2 = document.createElement('h2');
+      h2.textContent = line.substring(3);
+      preview.appendChild(h2);
+    } else if (line.startsWith('# ')) {
+      const h1 = document.createElement('h1');
+      h1.textContent = line.substring(2);
+      preview.appendChild(h1);
+    }
+    // Lists
+    else if (line.match(/^\d+\. /)) {
+      if (!currentList || listType !== 'ol') {
+        if (currentList) preview.appendChild(currentList);
+        currentList = document.createElement('ol');
+        listType = 'ol';
+      }
+      const li = document.createElement('li');
+      li.textContent = line.replace(/^\d+\. /, '');
+      currentList.appendChild(li);
+    } else if (line.startsWith('- ')) {
+      if (!currentList || listType !== 'ul') {
+        if (currentList) preview.appendChild(currentList);
+        currentList = document.createElement('ul');
+        listType = 'ul';
+      }
+      const li = document.createElement('li');
+      li.textContent = line.substring(2);
+      currentList.appendChild(li);
+    }
+    // Regular text with formatting
+    else {
+      if (currentList) {
+        preview.appendChild(currentList);
+        currentList = null;
+      }
+      const p = document.createElement('p');
+      
+      // Process links and bold text
+      const parts = line.split(/(\[.*?\]\(.*?\)|\*\*.*?\*\*)/);
+      parts.forEach(part => {
+        if (part.match(/\[.*?\]\(.*?\)/)) {
+          const match = part.match(/\[(.*?)\]\((.*?)\)/);
+          const a = document.createElement('a');
+          a.textContent = match[1];
+          a.href = match[2];
+          a.target = '_blank';
+          p.appendChild(a);
+        } else if (part.match(/\*\*.*?\*\*/)) {
+          const strong = document.createElement('strong');
+          strong.textContent = part.replace(/\*\*/g, '');
+          p.appendChild(strong);
+        } else if (part) {
+          p.appendChild(document.createTextNode(part));
+        }
+      });
+      
+      preview.appendChild(p);
+    }
+  });
+  
+  // Don't forget to append any remaining list
+  if (currentList) {
+    preview.appendChild(currentList);
+  }
 }
 
 // Initial preview
