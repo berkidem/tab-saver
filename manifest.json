@@ -1,8 +1,14 @@
 {
   "manifest_version": 2,
   "name": "Tab Saver to Markdown",
-  "version": "1.0",
+  "version": "1.0.0",
   "description": "Save all open tabs to a markdown file with metadata",
+
+ "browser_specific_settings": {
+  "gecko": {
+    "id": "berkidem@gmail.com"
+  }
+},
   
   "permissions": [
     "tabs",
@@ -26,8 +32,6 @@
       "128": "icon.svg"
     }
   },
-  
-
   
   "commands": {
     "save-tabs": {

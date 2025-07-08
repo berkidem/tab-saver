@@ -3,46 +3,79 @@
 <head>
   <meta charset="utf-8">
   <style>
+    /* Solarized Light Color Scheme */
+    :root {
+      --base03: #002b36;
+      --base02: #073642;
+      --base01: #586e75;
+      --base00: #657b83;
+      --base0: #839496;
+      --base1: #93a1a1;
+      --base2: #eee8d5;
+      --base3: #fdf6e3;
+      --yellow: #b58900;
+      --orange: #cb4b16;
+      --red: #dc322f;
+      --magenta: #d33682;
+      --violet: #6c71c4;
+      --blue: #268bd2;
+      --cyan: #2aa198;
+      --green: #859900;
+    }
+    
     body {
       width: 300px;
       padding: 10px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: "Courier New", "Courier", "Monaco", "Menlo", monospace;
+      background: var(--base3);
+      color: var(--base00);
     }
     
     h1 {
       font-size: 16px;
       margin: 0 0 10px 0;
+      color: var(--blue);
     }
     
     button {
       width: 100%;
       padding: 10px;
       font-size: 14px;
-      background-color: #0060df;
-      color: white;
+      background-color: var(--blue);
+      color: var(--base3);
       border: none;
       border-radius: 4px;
       cursor: pointer;
       margin-bottom: 8px;
+      font-family: "Courier New", "Courier", "Monaco", "Menlo", monospace;
     }
     
     button:hover {
-      background-color: #003eaa;
+      background-color: var(--cyan);
     }
     
     .info {
       font-size: 12px;
-      color: #666;
+      color: var(--base01);
       margin-top: 10px;
       padding-top: 10px;
-      border-top: 1px solid #e0e0e0;
+      border-top: 1px solid var(--base2);
     }
     
     .shortcut {
-      background-color: #f0f0f0;
+      background-color: var(--base2);
+      color: var(--base01);
       padding: 2px 4px;
       border-radius: 3px;
-      font-family: monospace;
+      font-family: "Courier New", "Courier", "Monaco", "Menlo", monospace;
+    }
+    
+    a {
+      color: var(--blue);
+    }
+    
+    a:hover {
+      color: var(--cyan);
     }
   </style>
 </head>
