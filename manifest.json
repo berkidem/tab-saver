@@ -1,12 +1,13 @@
 {
   "manifest_version": 2,
   "name": "Tab Saver to Markdown",
-  "version": "1.0.3",
-  "description": "Save all open tabs to a markdown file with metadata",
+  "version": "1.0.4",
+  "description": "Save all your open tabs to organized markdown files with rich metadata, usage statistics, and tab relationships. Perfect for tab hoarders who need to archive and annotate their browsing sessions.",
+  "categories": ["productivity"],
 
  "browser_specific_settings": {
   "gecko": {
-    "id": "tab-saver@berkidem.com"
+    "id": "tab-saver-markdown@berkidem.com"
   }
 },
   
