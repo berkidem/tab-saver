@@ -30,6 +30,48 @@ if (draft && !markdown) {
   document.getElementById('editor').value = draft;
 }
 
+// Simple scroll sync between editor and preview
+function syncScroll() {
+  const editor = document.getElementById('editor');
+  const previewContainer = document.getElementById('previewContainer');
+  
+  // Calculate scroll percentage of editor
+  const editorMaxScroll = editor.scrollHeight - editor.clientHeight;
+  if (editorMaxScroll <= 0) return; // No scrolling needed
+  
+  const scrollPercentage = editor.scrollTop / editorMaxScroll;
+  
+  // Apply same percentage to preview container
+  const maxScroll = previewContainer.scrollHeight - previewContainer.clientHeight;
+  if (maxScroll > 0) {
+    previewContainer.scrollTop = scrollPercentage * maxScroll;
+  }
+}
+
+// Add scroll sync listener
+document.getElementById('editor').addEventListener('scroll', syncScroll);
+
+// Helper function to process markdown formatting (links and bold text)
+function processMarkdownText(text, container) {
+  const parts = text.split(/(\[.*?\]\(.*?\)|\*\*.*?\*\*)/);
+  parts.forEach(part => {
+    if (part.match(/\[.*?\]\(.*?\)/)) {
+      const match = part.match(/\[(.*?)\]\((.*?)\)/);
+      const a = document.createElement('a');
+      a.textContent = match[1];
+      a.href = match[2];
+      a.target = '_blank';
+      container.appendChild(a);
+    } else if (part.match(/\*\*.*?\*\*/)) {
+      const strong = document.createElement('strong');
+      strong.textContent = part.replace(/\*\*/g, '');
+      container.appendChild(strong);
+    } else if (part) {
+      container.appendChild(document.createTextNode(part));
+    }
+  });
+}
+
 // Preview functionality using DOM manipulation (no innerHTML)
 function updatePreview() {
   const content = document.getElementById('editor').value;
@@ -56,15 +98,15 @@ function updatePreview() {
     // Headers
     if (line.startsWith('### ')) {
       const h3 = document.createElement('h3');
-      h3.textContent = line.substring(4);
+      processMarkdownText(line.substring(4), h3);
       preview.appendChild(h3);
     } else if (line.startsWith('## ')) {
       const h2 = document.createElement('h2');
-      h2.textContent = line.substring(3);
+      processMarkdownText(line.substring(3), h2);
       preview.appendChild(h2);
     } else if (line.startsWith('# ')) {
       const h1 = document.createElement('h1');
-      h1.textContent = line.substring(2);
+      processMarkdownText(line.substring(2), h1);
       preview.appendChild(h1);
     }
     // Lists
@@ -75,7 +117,7 @@ function updatePreview() {
         listType = 'ol';
       }
       const li = document.createElement('li');
-      li.textContent = line.replace(/^\d+\. /, '');
+      processMarkdownText(line.replace(/^\d+\. /, ''), li);
       currentList.appendChild(li);
     } else if (line.startsWith('- ')) {
       if (!currentList || listType !== 'ul') {
@@ -84,7 +126,7 @@ function updatePreview() {
         listType = 'ul';
       }
       const li = document.createElement('li');
-      li.textContent = line.substring(2);
+      processMarkdownText(line.substring(2), li);
       currentList.appendChild(li);
     }
     // Regular text with formatting
@@ -94,26 +136,7 @@ function updatePreview() {
         currentList = null;
       }
       const p = document.createElement('p');
-      
-      // Process links and bold text
-      const parts = line.split(/(\[.*?\]\(.*?\)|\*\*.*?\*\*)/);
-      parts.forEach(part => {
-        if (part.match(/\[.*?\]\(.*?\)/)) {
-          const match = part.match(/\[(.*?)\]\((.*?)\)/);
-          const a = document.createElement('a');
-          a.textContent = match[1];
-          a.href = match[2];
-          a.target = '_blank';
-          p.appendChild(a);
-        } else if (part.match(/\*\*.*?\*\*/)) {
-          const strong = document.createElement('strong');
-          strong.textContent = part.replace(/\*\*/g, '');
-          p.appendChild(strong);
-        } else if (part) {
-          p.appendChild(document.createTextNode(part));
-        }
-      });
-      
+      processMarkdownText(line, p);
       preview.appendChild(p);
     }
   });
@@ -122,6 +145,9 @@ function updatePreview() {
   if (currentList) {
     preview.appendChild(currentList);
   }
+  
+  // Sync scroll after updating preview
+  setTimeout(syncScroll, 0);
 }
 
 // Initial preview
