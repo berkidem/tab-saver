@@ -98,9 +98,6 @@ const enhancedTabTracking = {
 // Initialize storage on extension startup
 initializeStorage();
 
-// Legacy tab metadata storage (now using persistent storage)
-// const tabMetadata = new Map();
-
 // Track when tabs are created
 browser.tabs.onCreated.addListener(enhancedTabTracking.onTabCreated);
 

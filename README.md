@@ -44,15 +44,24 @@ So, I wanted to be able to save the tabs in such a way that I would have the opt
 Since this extension is currently for personal use and not yet published to the Mozilla Add-ons store, you'll need to install it manually:
 
 ### Step 1: Download the Source Code
+#### Option 1: Download from GitHub Releases
+1. Go to the [Releases page](https://github.com/berkidem/tab-saver/releases)
+2. Download the latest `.zip` file
+3. Rename it to `tab-saver.xpi` (or any name ending in `.xpi`)
+4. Jump to Step 2 below to install in Firefox
+
+#### Option 2: Manual Installation
+
+##### Step 1a: Download the Source Code
 1. Download or clone this repository to your local machine
 2. Ensure you have all the files in a single folder
 
-### Step 2: Create the Extension Package
+##### Step 1b: Create the Extension Package
 1. Select all files in the extension folder (not the folder itself)
 2. Right-click and choose "Send to" → "Compressed (zipped) folder" (Windows) or use your preferred zip utility
 3. Rename the resulting `.zip` file to have a `.xpi` extension (e.g., `tab-saver.xpi`)
 
-### Step 3: Install in Firefox
+#### Step 2: Install in Firefox
 1. Open Firefox
 2. Navigate to `about:addons` or go to Menu --> Add-ons and Themes
 3. Click the gear icon (⚙️) in the top-right corner
@@ -60,9 +69,9 @@ Since this extension is currently for personal use and not yet published to the 
 5. Choose your `.xpi` file
 6. Click "Add" when prompted
 
-NB: For step 4/5/6 to work as expected, you might need to go to `about:config`, search for `xpinstall` and set `xpinstall.signatures.required` to `false`. If this doesn't work, you might also need to switch to the Developer Edition of Firefox. This problem will be solved when I submit this add-on to Firefox's marketplace but I want to test it more extensively before that. I tested it on Firefox version 128.12.0esr.
+NB: For step 2 to work as expected, you might need to go to `about:config`, search for `xpinstall` and set `xpinstall.signatures.required` to `false`. If this doesn't work, you might also need to switch to the Developer Edition of Firefox. This problem will be solved when I submit this add-on to Firefox's marketplace but I want to test it more extensively before that. I tested it on Firefox version 128.12.0esr.
 
-### Step 4: Grant Permissions
+#### Step 4: Grant Permissions
 The extension will request permissions to:
 - Access your tabs
 - Download files
