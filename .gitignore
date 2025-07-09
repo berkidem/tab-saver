@@ -4,6 +4,7 @@
 dist/
 build/
 
+
 # Node.js dependencies 
 node_modules/
 npm-debug.log*
@@ -18,4 +19,8 @@ package-lock.json
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Exclude markdown files except README.md
+*.md
+!README.md
 
