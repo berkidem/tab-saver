@@ -41,7 +41,9 @@ So, I wanted to be able to save the tabs in such a way that I would have the opt
 
 ## Installation
 
-Since this extension is currently for personal use and not yet published to the Mozilla Add-ons store, you'll need to install it manually:
+**Recommended:** You can simply install the  most recent stable version from [this link](https://addons.mozilla.org/en-US/firefox/addon/tabs-to-markdown-with-notes/).
+
+If you want to install the latest version, you'll need to do it manually:
 
 ### Step 1: Download the Source Code
 #### Option 1: Download from GitHub Releases
